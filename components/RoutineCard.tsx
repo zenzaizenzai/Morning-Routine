@@ -69,6 +69,7 @@ export const RoutineCard: React.FC<RoutineCardProps> = ({
         </div>
       )}
 
+{(!routine.isEditing && !isCompleted) && ( // ★★★ この条件でボタンを囲みます ★★★
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -83,6 +84,7 @@ export const RoutineCard: React.FC<RoutineCardProps> = ({
       >
         <Edit2 size={14} />
       </button>
+      )} // ★★★ 閉じタグ ★★★
     </div>
   );
 };
