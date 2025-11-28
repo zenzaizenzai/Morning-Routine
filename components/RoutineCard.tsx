@@ -62,29 +62,28 @@ export const RoutineCard: React.FC<RoutineCardProps> = ({
       <h3 className={`text-lg font-bold text-center leading-tight px-1 select-none ${isCompleted ? 'text-white' : 'text-slate-700'}`}>
         {routine.title}
       </h3>
+{isCompleted && (
+        <div className="absolute top-3 left-3 bg-white/20 rounded-full p-1">
+          <Check size={14} className="text-white" strokeWidth={3} />
+        </div>
+      )}
 
-      {isCompleted && (
-        <div className="absolute top-3 left-3 bg-white/20 rounded-full p-1">
-          <Check size={14} className="text-white" strokeWidth={3} />
-        </div>
-      )}
-
-{(!routine.isEditing && !isCompleted) && ( // ★★★ この条件でボタンを囲みます ★★★
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onEditStart(routine.id);
-        }}
-        className={`
-          absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200
-          ${isCompleted ? 'bg-white/20 text-white hover:bg-white/30' : 'bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600'}
-          opacity-0 group-hover:opacity-100
-          ${!isCompleted ? '' : 'pointer-events-none'} /* ★この行を追加★ */
-        `}
-      >
-        <Edit2 size={14} />
-      </button>
-      )} // ★★★ 閉じタグ ★★★
-    </div>
-  );
+      {/* ★★★ 修正箇所: ボタン全体を {!isCompleted} の条件で囲む ★★★ */}
+      {!isCompleted && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onEditStart(routine.id);
+          }}
+          className={`
+            absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200
+            bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600
+            opacity-100 group-hover:opacity-100 /* PCで常に表示（ホバー機能は残す） */
+          `}
+        >
+          <Edit2 size={14} />
+        </button>
+      )}
+    </div>
+  );
 };
