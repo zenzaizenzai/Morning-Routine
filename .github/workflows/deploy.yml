@@ -15,10 +15,6 @@ concurrency:
   cancel-in-progress: true
 
 # deploy.yml に追記・修正する内容
-permissions:
-  contents: read
-  pages: write  # ★★★ Pagesへの書き込み権限を追加 ★★★
-  id-token: write
 
 jobs:
   build:
