@@ -7,13 +7,15 @@ interface RoutineCardProps {
   onToggle: (id: string) => void;
   onUpdate: (id: string, newTitle: string) => void;
   onEditStart: (id: string) => void;
+  onEditEnd: (id: string) => void;
 }
 
 export const RoutineCard: React.FC<RoutineCardProps> = ({ 
   routine, 
   onToggle, 
   onUpdate,
-  onEditStart
+  onEditStart,
+  onEditEnd
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -38,7 +40,7 @@ export const RoutineCard: React.FC<RoutineCardProps> = ({
           ref={inputRef}
           value={routine.title}
           onChange={(e) => onUpdate(routine.id, e.target.value)}
-          onBlur={() => onUpdate(routine.id, routine.title)} // Stop editing on blur
+          onBlur={() => onEditEnd(routine.id)}
           onKeyDown={handleKeyDown}
           className="w-full bg-transparent text-slate-800 text-lg font-bold text-center border-b-2 border-primary focus:outline-none p-1"
         />

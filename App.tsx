@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Edit2, RotateCw, Plus, Sparkles, Loader2 } from 'lucide-react';
+import { RotateCw, Sparkles, Loader2 } from 'lucide-react';
 import { TabType, Routine } from './types';
 import { TabSwitcher } from './components/TabSwitcher';
 import { RoutineCard } from './components/RoutineCard';
@@ -9,6 +9,25 @@ export default function App() {
   const [currentTab, setCurrentTab] = useState<TabType>('weekday');
   const [dateStr, setDateStr] = useState('');
   
+  // Tab Labels State (Persisted)
+  const [tabLabels, setTabLabels] = useState<Record<TabType, string>>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('morning-routine-tabs');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          console.error('Failed to parse tab labels');
+        }
+      }
+    }
+    return {
+      weekday: '平日',
+      weekend: '休日',
+      special: '特別'
+    };
+  });
+
   // Initialize from localStorage if available, otherwise use defaults
   const [routines, setRoutines] = useState<Routine[]>(() => {
     if (typeof window !== 'undefined') {
@@ -41,6 +60,11 @@ export default function App() {
     localStorage.setItem('morning-routines', JSON.stringify(routines));
   }, [routines]);
 
+  // Save tab labels
+  useEffect(() => {
+    localStorage.setItem('morning-routine-tabs', JSON.stringify(tabLabels));
+  }, [tabLabels]);
+
   useEffect(() => {
     // Format date: "10月26日 (木)"
     const now = new Date();
@@ -58,9 +82,17 @@ export default function App() {
     ));
   };
 
+  // Update text ONLY (keep editing state)
   const handleUpdate = (id: string, newTitle: string) => {
     setRoutines(prev => prev.map(r => 
-      r.id === id ? { ...r, title: newTitle, isEditing: false } : r
+      r.id === id ? { ...r, title: newTitle } : r
+    ));
+  };
+
+  // Finish editing
+  const handleEditEnd = (id: string) => {
+    setRoutines(prev => prev.map(r => 
+      r.id === id ? { ...r, isEditing: false } : r
     ));
   };
 
@@ -71,11 +103,10 @@ export default function App() {
   };
 
   const handleReset = () => {
-    if (window.confirm('今日の進捗をリセットしますか？')) {
-      setRoutines(prev => prev.map(r => 
-        r.tab === currentTab ? { ...r, completed: false } : r
-      ));
-    }
+    // Reset confirmation removed for smoother UX and to avoid popup blockers
+    setRoutines(prev => prev.map(r => 
+      r.tab === currentTab ? { ...r, completed: false } : r
+    ));
   };
 
   const handleAddRoutine = () => {
@@ -94,9 +125,16 @@ export default function App() {
 
   const handleGeminiSuggest = async () => {
     setIsSuggesting(true);
-    const suggestion = await suggestRoutine(currentTab === 'weekday' ? '平日' : '休日');
+    const suggestion = await suggestRoutine(tabLabels[currentTab]);
     setNewRoutineText(suggestion);
     setIsSuggesting(false);
+  };
+
+  const handleTabRename = (tab: TabType, newName: string) => {
+    setTabLabels(prev => ({
+      ...prev,
+      [tab]: newName
+    }));
   };
 
   const visibleRoutines = routines.filter(r => r.tab === currentTab);
@@ -104,26 +142,28 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col font-sans bg-background-light">
       {/* Header Section */}
-      <header className="bg-teal-100 rounded-b-[2.5rem] pb-8 pt-4 px-6 shadow-sm z-10">
+      {/* Added relative and z-10 to ensure header stays on top of the main content's negative margin */}
+      <header className="relative bg-teal-100 rounded-b-[2.5rem] pb-8 pt-4 px-6 shadow-sm z-10">
         <div className="text-center mb-6">
           <h1 className="text-xs font-bold text-slate-400 tracking-wider">朝のルーティンプランナー</h1>
         </div>
         
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-3xl font-bold text-slate-800 tracking-tight">朝のルーティン</h2>
-          <button className="flex items-center gap-1.5 text-xs font-bold text-slate-600 bg-white/60 hover:bg-white/80 transition-colors py-2 px-4 rounded-full backdrop-blur-sm">
-            <Edit2 size={14} />
-            <span>編集</span>
-          </button>
         </div>
 
-        <TabSwitcher currentTab={currentTab} onChange={setCurrentTab} />
+        <TabSwitcher 
+          currentTab={currentTab} 
+          onChange={setCurrentTab} 
+          labels={tabLabels}
+          onRename={handleTabRename}
+        />
 
         <div className="mt-8 flex justify-between items-center px-1">
           <p className="text-slate-600 font-bold text-lg">{dateStr}</p>
           <button 
             onClick={handleReset}
-            className="flex items-center gap-1.5 text-sm font-bold text-teal-700 bg-teal-200/50 hover:bg-teal-200/80 transition-colors py-1.5 px-3 rounded-full"
+            className="flex items-center gap-1.5 text-sm font-bold text-teal-700 bg-teal-200/50 hover:bg-teal-200/80 transition-colors py-1.5 px-3 rounded-full cursor-pointer active:scale-95 transition-transform"
           >
             <RotateCw size={16} />
             <span>リセット</span>
@@ -132,7 +172,8 @@ export default function App() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-grow px-6 -mt-4 pt-10 pb-32 z-0">
+      {/* Added relative and z-0 to establish stacking context */}
+      <main className="relative flex-grow px-6 -mt-4 pt-10 pb-10 z-0">
         <div className="grid grid-cols-2 gap-4">
           {visibleRoutines.map(routine => (
             <RoutineCard 
@@ -141,6 +182,7 @@ export default function App() {
               onToggle={handleToggle}
               onUpdate={handleUpdate}
               onEditStart={handleEditStart}
+              onEditEnd={handleEditEnd}
             />
           ))}
 
@@ -175,17 +217,6 @@ export default function App() {
           </div>
         </div>
       </main>
-
-      {/* Sticky Bottom Action */}
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-md border-t border-slate-100 z-50 safe-area-bottom">
-        <button 
-          onClick={handleAddRoutine}
-          className="w-full h-14 bg-primary hover:bg-primary-dark active:scale-[0.98] transition-all text-white font-bold text-lg rounded-2xl flex items-center justify-center shadow-lg shadow-teal-200/50"
-        >
-          <Plus size={24} className="mr-2" strokeWidth={3} />
-          <span>新規追加</span>
-        </button>
-      </div>
     </div>
   );
 }
