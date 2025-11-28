@@ -78,6 +78,7 @@ export const RoutineCard: React.FC<RoutineCardProps> = ({
           absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200
           ${isCompleted ? 'bg-white/20 text-white hover:bg-white/30' : 'bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600'}
           opacity-0 group-hover:opacity-100
+          ${!isCompleted ? '' : 'pointer-events-none'} /* ★この行を追加★ */
         `}
       >
         <Edit2 size={14} />
