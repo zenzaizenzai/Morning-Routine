@@ -5,5 +5,5 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   // 重要: GitHub Pagesなどのサブディレクトリでのデプロイに対応するため相対パスにする
-  base: '/Morning-Routine/',
+  base: './',
 });
