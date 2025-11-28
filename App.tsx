@@ -22,9 +22,9 @@ export default function App() {
       }
     }
     return {
-      weekday: '平日',
-      weekend: '休日',
-      special: '特別'
+      weekday: '保育園',
+      weekend: '通院',
+      special: '出張'
     };
   });
 
@@ -41,14 +41,14 @@ export default function App() {
       }
     }
     return [
-      { id: '1', title: '水を一杯飲む', completed: true, tab: 'weekday' },
-      { id: '2', title: 'ベッドを整える', completed: false, tab: 'weekday' },
-      { id: '3', title: '5分間の瞑想', completed: false, tab: 'weekday' },
-      { id: '4', title: '今日のタスクを確認', completed: false, tab: 'weekday' },
-      { id: '5', title: 'ストレッチ', completed: false, tab: 'weekday' },
+      { id: '1', title: 'ガスの元栓', completed: true, tab: 'weekday' },
+      { id: '2', title: 'エアコン', completed: false, tab: 'weekday' },
+      { id: '3', title: '体温', completed: false, tab: 'weekday' },
+      { id: '4', title: '水筒', completed: false, tab: 'weekday' },
+      { id: '5', title: '連絡帳', completed: false, tab: 'weekday' },
       // Weekend examples
-      { id: '6', title: 'ゆっくり朝食', completed: false, tab: 'weekend' },
-      { id: '7', title: '散歩する', completed: false, tab: 'weekend' },
+      { id: '6', title: 'マイナカード', completed: false, tab: 'weekend' },
+      { id: '7', title: 'おくすり手帳', completed: false, tab: 'weekend' },
     ];
   });
 
@@ -145,11 +145,11 @@ export default function App() {
       {/* Added relative and z-10 to ensure header stays on top of the main content's negative margin */}
       <header className="relative bg-teal-100 rounded-b-[2.5rem] pb-8 pt-4 px-6 shadow-sm z-10">
         <div className="text-center mb-6">
-          <h1 className="text-xs font-bold text-slate-400 tracking-wider">朝のルーティンプランナー</h1>
+          <h1 className="text-xs font-bold text-slate-400 tracking-wider">指さしチェックシート</h1>
         </div>
 
         <div className="flex items-center justify-between mb-2">
-          <h2 className="text-3xl font-bold text-slate-800 tracking-tight">朝のルーティン</h2>
+          <h2 className="text-3xl font-bold text-slate-800 tracking-tight">指さしチェックシート</h2>
         </div>
 
         <TabSwitcher
