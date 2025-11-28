@@ -10,9 +10,9 @@ interface RoutineCardProps {
   onEditEnd: (id: string) => void;
 }
 
-export const RoutineCard: React.FC<RoutineCardProps> = ({ 
-  routine, 
-  onToggle, 
+export const RoutineCard: React.FC<RoutineCardProps> = ({
+  routine,
+  onToggle,
   onUpdate,
   onEditStart,
   onEditEnd
@@ -25,7 +25,7 @@ export const RoutineCard: React.FC<RoutineCardProps> = ({
     }
   }, [routine.isEditing]);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.currentTarget.blur();
     }
@@ -50,26 +50,26 @@ export const RoutineCard: React.FC<RoutineCardProps> = ({
   }
 
   return (
-    <div 
+    <div
       onClick={() => onToggle(routine.id)}
       className={`
         relative group aspect-square rounded-3xl p-4 flex flex-col justify-center items-center cursor-pointer transition-all duration-300 shadow-sm
-        ${isCompleted 
-          ? 'bg-gradient-to-br from-teal-300 to-teal-400 shadow-teal-200/50 text-white transform scale-[1.02]' 
+        ${isCompleted
+          ? 'bg-gradient-to-br from-teal-300 to-teal-400 shadow-teal-200/50 text-white transform scale-[1.02]'
           : 'bg-white hover:bg-gray-50 text-slate-700 border border-transparent hover:border-slate-100'}
       `}
     >
       <h3 className={`text-lg font-bold text-center leading-tight px-1 select-none ${isCompleted ? 'text-white' : 'text-slate-700'}`}>
         {routine.title}
       </h3>
-      
+
       {isCompleted && (
         <div className="absolute top-3 left-3 bg-white/20 rounded-full p-1">
           <Check size={14} className="text-white" strokeWidth={3} />
         </div>
       )}
 
-      <button 
+      <button
         onClick={(e) => {
           e.stopPropagation();
           onEditStart(routine.id);

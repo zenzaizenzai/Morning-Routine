@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { RotateCw, Sparkles, Loader2 } from 'lucide-react';
 import { TabType, Routine } from './types';
 import { TabSwitcher } from './components/TabSwitcher';
@@ -8,7 +8,7 @@ import { suggestRoutine } from './services/geminiService';
 export default function App() {
   const [currentTab, setCurrentTab] = useState<TabType>('weekday');
   const [dateStr, setDateStr] = useState('');
-  
+
   // Tab Labels State (Persisted)
   const [tabLabels, setTabLabels] = useState<Record<TabType, string>>(() => {
     if (typeof window !== 'undefined') {
@@ -77,48 +77,48 @@ export default function App() {
   }, []);
 
   const handleToggle = (id: string) => {
-    setRoutines(prev => prev.map(r => 
+    setRoutines(prev => prev.map(r =>
       r.id === id ? { ...r, completed: !r.completed } : r
     ));
   };
 
   // Update text ONLY (keep editing state)
   const handleUpdate = (id: string, newTitle: string) => {
-    setRoutines(prev => prev.map(r => 
+    setRoutines(prev => prev.map(r =>
       r.id === id ? { ...r, title: newTitle } : r
     ));
   };
 
   // Finish editing
   const handleEditEnd = (id: string) => {
-    setRoutines(prev => prev.map(r => 
+    setRoutines(prev => prev.map(r =>
       r.id === id ? { ...r, isEditing: false } : r
     ));
   };
 
   const handleEditStart = (id: string) => {
-    setRoutines(prev => prev.map(r => 
+    setRoutines(prev => prev.map(r =>
       r.id === id ? { ...r, isEditing: true } : { ...r, isEditing: false }
     ));
   };
 
   const handleReset = () => {
     // Reset confirmation removed for smoother UX and to avoid popup blockers
-    setRoutines(prev => prev.map(r => 
+    setRoutines(prev => prev.map(r =>
       r.tab === currentTab ? { ...r, completed: false } : r
     ));
   };
 
   const handleAddRoutine = () => {
     if (!newRoutineText.trim()) return;
-    
+
     const newRoutine: Routine = {
       id: Date.now().toString(),
       title: newRoutineText,
       completed: false,
       tab: currentTab,
     };
-    
+
     setRoutines([...routines, newRoutine]);
     setNewRoutineText('');
   };
@@ -147,21 +147,21 @@ export default function App() {
         <div className="text-center mb-6">
           <h1 className="text-xs font-bold text-slate-400 tracking-wider">朝のルーティンプランナー</h1>
         </div>
-        
+
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-3xl font-bold text-slate-800 tracking-tight">朝のルーティン</h2>
         </div>
 
-        <TabSwitcher 
-          currentTab={currentTab} 
-          onChange={setCurrentTab} 
+        <TabSwitcher
+          currentTab={currentTab}
+          onChange={setCurrentTab}
           labels={tabLabels}
           onRename={handleTabRename}
         />
 
         <div className="mt-8 flex justify-between items-center px-1">
           <p className="text-slate-600 font-bold text-lg">{dateStr}</p>
-          <button 
+          <button
             onClick={handleReset}
             className="flex items-center gap-1.5 text-sm font-bold text-teal-700 bg-teal-200/50 hover:bg-teal-200/80 transition-colors py-1.5 px-3 rounded-full cursor-pointer active:scale-95 transition-transform"
           >
@@ -176,9 +176,9 @@ export default function App() {
       <main className="relative flex-grow px-6 -mt-4 pt-10 pb-10 z-0">
         <div className="grid grid-cols-2 gap-4">
           {visibleRoutines.map(routine => (
-            <RoutineCard 
-              key={routine.id} 
-              routine={routine} 
+            <RoutineCard
+              key={routine.id}
+              routine={routine}
               onToggle={handleToggle}
               onUpdate={handleUpdate}
               onEditStart={handleEditStart}
@@ -188,7 +188,7 @@ export default function App() {
 
           {/* New Routine Input Card */}
           <div className="aspect-square rounded-3xl border-2 border-dashed border-slate-300 bg-slate-50/50 flex flex-col justify-center items-center p-4 relative group hover:border-primary transition-colors">
-            <input 
+            <input
               type="text"
               value={newRoutineText}
               onChange={(e) => setNewRoutineText(e.target.value)}
@@ -196,23 +196,23 @@ export default function App() {
               placeholder="新しいルーティン"
               className="w-full bg-transparent text-slate-500 placeholder:text-slate-400 text-lg font-bold text-center border-b-2 border-slate-200 focus:border-primary focus:outline-none p-1 transition-colors"
             />
-             {/* AI Suggest Button */}
+            {/* AI Suggest Button */}
             <button
-               onClick={handleGeminiSuggest}
-               disabled={isSuggesting}
-               className="absolute top-3 right-3 p-2 rounded-full text-slate-400 hover:text-primary hover:bg-primary/10 transition-colors disabled:opacity-50"
-               title="AI Suggestion"
+              onClick={handleGeminiSuggest}
+              disabled={isSuggesting}
+              className="absolute top-3 right-3 p-2 rounded-full text-slate-400 hover:text-primary hover:bg-primary/10 transition-colors disabled:opacity-50"
+              title="AI Suggestion"
             >
               {isSuggesting ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
             </button>
-            
+
             {newRoutineText && (
-               <button 
+              <button
                 onClick={handleAddRoutine}
                 className="mt-2 text-primary text-sm font-bold hover:underline"
-               >
-                 追加
-               </button>
+              >
+                追加
+              </button>
             )}
           </div>
         </div>
