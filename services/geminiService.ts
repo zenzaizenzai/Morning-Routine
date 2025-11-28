@@ -1,28 +1,43 @@
-import { GoogleGenAI } from "@google/genai";
+// Previously used Gemini API, now using local static suggestions to remove API dependency.
 
-// Initialize the Gemini API client
-// The API key must be obtained exclusively from process.env.API_KEY
-// Assume this variable is pre-configured, valid, and accessible
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const WEEKDAY_SUGGESTIONS = [
+  "白湯を飲む", 
+  "読書する", 
+  "深呼吸", 
+  "ストレッチ", 
+  "日記を書く",
+  "メール整理", 
+  "植物の水やり", 
+  "軽い筋トレ", 
+  "瞑想", 
+  "朝食を作る",
+  "ニュース確認",
+  "換気する"
+];
+
+const WEEKEND_SUGGESTIONS = [
+  "散歩する", 
+  "カフェに行く", 
+  "映画を見る", 
+  "掃除する", 
+  "長風呂",
+  "趣味の時間", 
+  "友人と会う", 
+  "買い物", 
+  "新しい料理", 
+  "昼寝",
+  "断捨離",
+  "ジムへ行く"
+];
 
 export const suggestRoutine = async (context: string): Promise<string> => {
-  try {
-    const model = 'gemini-2.5-flash';
-    const prompt = `
-      Suggest a single, short, healthy morning routine task in Japanese.
-      Context: The user is looking for a task for their "${context}" list.
-      Keep it under 10 characters if possible. Do not include quotes.
-      Examples: "白湯を飲む", "読書する", "深呼吸".
-    `;
+  // Simulate a short delay for better UX (feels like "thinking")
+  await new Promise(resolve => setTimeout(resolve, 400));
 
-    const response = await ai.models.generateContent({
-      model,
-      contents: prompt,
-    });
-
-    return response.text?.trim() || "新しいタスク";
-  } catch (error) {
-    console.error("Gemini API Error:", error);
-    return "瞑想する";
-  }
+  const list = (context.includes('休日') || context.includes('weekend'))
+    ? WEEKEND_SUGGESTIONS 
+    : WEEKDAY_SUGGESTIONS;
+  
+  const randomIndex = Math.floor(Math.random() * list.length);
+  return list[randomIndex];
 };
